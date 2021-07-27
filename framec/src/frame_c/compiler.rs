@@ -10,6 +10,7 @@ use crate::frame_c::visitors::python_visitor::PythonVisitor;
 use crate::frame_c::visitors::gdscript_3_2_visitor::GdScript32Visitor;
 use crate::frame_c::visitors::java_8_visitor::Java8Visitor;
 use crate::frame_c::visitors::rust_visitor::RustVisitor;
+use crate::frame_c::visitors::smcat_visitor::SmcatVisitor;
 use crate::frame_c::utils::{RunError, frame_exitcode};
 use exitcode::USAGE;
 extern crate yaml_rust;
@@ -236,6 +237,20 @@ impl Exe {
                                              , generate_transition_state
                                              , FRAMEC_VERSION
                                              , comments);
+            visitor.run(&system_node);
+            output = visitor.get_code();
+        } else if output_format == "smcat" {
+            let (x,y) = semantic_parser.get_all();
+            let mut visitor = SmcatVisitor::new(
+                                                  x
+                                                , y
+                                                , generate_exit_args
+                                                , generate_state_context
+                                                , generate_state_stack
+                                                , generate_change_state
+                                                , generate_transition_state
+                                                ,FRAMEC_VERSION
+                                                , comments);
             visitor.run(&system_node);
             output = visitor.get_code();
         // } else if output_format == "xstate" {
